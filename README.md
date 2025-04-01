@@ -5,7 +5,6 @@
 2. Clone this repository.
 3. Install dependencies: 
     `python3 -m venv path/to/venv`
-    `source path/to/venv/bin/activate`
     `pip install -r requirements.txt`
 4. Set your Groq API key in `config/.env`.
 5. Run the simulation:
