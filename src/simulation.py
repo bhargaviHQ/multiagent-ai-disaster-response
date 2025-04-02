@@ -3,7 +3,7 @@ from src.environment import DisasterEnvironment
 import time
 import random
 
-def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=None, flowchart=None):
+def run_disaster_simulation(steps=1, ui_mode=False, chat_log=None, agent_status=None, flowchart=None):
     if chat_log is None:
         chat_log = []
     if agent_status is None:
@@ -19,8 +19,8 @@ def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=
     initial_message = f"Disaster Type: {env.disaster_type} | Affected Areas: {len(env.affected_areas)}"
     chat_log.append({"sender": "System", "message": initial_message})
 
-    for step in range(steps):
-        chat_log.append({"sender": "System", "message": f"Step {step + 1} starting..."})
+    for step in range(1,2):
+        chat_log.append({"sender": "System", "message": f"Controller starting..."})
         env.update_environment()
         env_data = env.get_report()
 
@@ -34,7 +34,7 @@ def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=
         # Controller
         agent_status["Controller"]["active"] = True
         agent_status["Controller"]["task"] = "Coordinate response"
-        controller_task = f"Coordinate for {env.disaster_type}. Areas: {env_data['affected_areas']}"
+        controller_task = f"Come up with a rescue plan and Coordinate for {env.disaster_type}. Areas: {env_data['affected_areas']} with agents. when you hae finished the communicated stop and wait for further instructions if needed."
         controller_response = agents["controller"].perform_task(controller_task)
         agent_status["Controller"]["message"] = controller_response
         agent_status["Controller"]["completed"] = True
@@ -44,7 +44,7 @@ def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=
         # Routes
         agent_status["Routes-1"]["active"] = True
         agent_status["Routes-1"]["task"] = f"Clear routes: {env_data['blocked_routes']}"
-        routes_task = f"Clear routes: {env_data['blocked_routes']}"
+        routes_task = f"See what are the affected areas and work on clearing the routes. Affected Areas: {env_data['affected_areas']}. Clear routes: {env_data['blocked_routes']}"
         routes_response = agents["routes"].perform_task(routes_task)
         agent_status["Routes-1"]["message"] = routes_response
         agent_status["Routes-1"]["completed"] = True
@@ -57,7 +57,7 @@ def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=
         agent_status[agents["drone"].name]["active"] = True
         random_area = random.choice(env_data["affected_areas"]) if env_data["affected_areas"] else (random.randint(0, 100), random.randint(0, 100))
         agent_status[agents["drone"].name]["task"] = f"Survey {random_area}"
-        drone_task = f"Survey {random_area}"
+        drone_task = f"You are a drone and your task is to Survey {random_area}. your task is to make it easier to access areas that are challenging for people to reach, so report views of disaster zones. "
         drone_response = agents["drone"].perform_task(drone_task)
         agent_status[agents["drone"].name]["message"] = drone_response
         agent_status[agents["drone"].name]["completed"] = True
@@ -68,7 +68,7 @@ def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=
         agent_status["Assess-1"]["active"] = True
         random_area = random.choice(env_data["affected_areas"]) if env_data["affected_areas"] else (0, 0)
         agent_status["Assess-1"]["task"] = f"Assess {random_area}"
-        assess_task = f"Assess {random_area}"
+        assess_task = f"your task is to assess the area and tell any important information. Assess {random_area}"
         assess_response = agents["assess"].perform_task(assess_task)
         agent_status["Assess-1"]["message"] = assess_response
         agent_status["Assess-1"]["completed"] = True
@@ -80,7 +80,7 @@ def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=
             agent_status["Rescue-1"]["active"] = True
             random_victim = random.choice(env_data["victim_locations"])
             agent_status["Rescue-1"]["task"] = f"Rescue at {random_victim}"
-            rescue_task = f"Rescue at {random_victim}"
+            rescue_task = f"Your task is to understand which victims need to be rescued and understand the situation and rescure. Rescue at {random_victim}"
             rescue_response = agents["rescue"].perform_task(rescue_task)
             agents["rescue"].update_location(random_victim)
             agent_status["Rescue-1"]["message"] = rescue_response
@@ -96,7 +96,7 @@ def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=
             agent_status[agents["supplies"].name]["active"] = True
             random_need = random.choice(env_data["supply_needs"])
             agent_status[agents["supplies"].name]["task"] = f"Deliver to {random_need}"
-            supplies_task = f"Deliver to {random_need}"
+            supplies_task = f"Your task is to deliver the items. mainly Deliver to {random_need}"
             supplies_response = agents["supplies"].perform_task(supplies_task)
             agents["supplies"].update_location((random_need[0], random_need[1]))
             agent_status[agents["supplies"].name]["message"] = supplies_response
@@ -110,7 +110,7 @@ def run_disaster_simulation(steps=3, ui_mode=False, chat_log=None, agent_status=
             agent_status["Medical-1"]["active"] = True
             random_victim = random.choice(env_data["victim_locations"])
             agent_status["Medical-1"]["task"] = f"Treat at {random_victim}"
-            medical_task = f"Treat at {random_victim}"
+            medical_task = f"You have a gorup of doctors and you are supposed to treat injured victims. Treat at {random_victim}"
             medical_response = agents["medical"].perform_task(medical_task)
             agents["medical"].update_location(random_victim)
             agent_status["Medical-1"]["message"] = medical_response
