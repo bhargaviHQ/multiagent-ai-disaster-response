@@ -1,117 +1,132 @@
 import streamlit as st
-from src.simulation import run_disaster_simulation  # Only import the function
+import streamlit.components.v1 as components
+from src.simulation import run_disaster_simulation
 import threading
 import time
-import random
 
-# Define bright colors for each agent
 AGENT_COLORS = {
-    "Controller": "#FF4500",  # Orange Red
-    "Routes-1": "#00CED1",    # Dark Turquoise
-    "Drone-1": "#FFD700",     # Gold
-    "Drone-2": "#FFA500",     # Orange
-    "Assess-1": "#32CD32",    # Lime Green
-    "Rescue-1": "#FF69B4",    # Hot Pink
-    "Supplies-1": "#1E90FF",  # Dodger Blue
-    "Supplies-2": "#4169E1",  # Royal Blue
-    "Medical-1": "#ADFF2F",   # Green Yellow
-    "System": "#808080"       # Gray
+    "Controller": "#FF4500", "Routes-1": "#00CED1", "Drone-1": "#FFD700", "Drone-2": "#FFA500",
+    "Assess-1": "#32CD32", "Rescue-1": "#FF69B4", "Supplies-1": "#1E90FF", "Supplies-2": "#4169E1",
+    "Medical-1": "#ADFF2F", "System": "#808080"
 }
 
 def run_simulation_in_background(chat_log, agent_status, flowchart):
-    print("Starting simulation in background thread")
-    run_disaster_simulation(steps=3, ui_mode=True, chat_log=chat_log, agent_status=agent_status, flowchart=flowchart)
+    result, disaster_type = run_disaster_simulation(steps=3, ui_mode=True, chat_log=chat_log, agent_status=agent_status, flowchart=flowchart)
+    st.session_state.simulation_result = result
+    st.session_state.disaster_type = disaster_type
 
 def draw_flowchart(flowchart):
     if not flowchart:
         return "<p>No actions yet.</p>"
-    
+
     html = """
     <style>
-        .flowchart-container { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
-        .agent-box { padding: 10px; border-radius: 5px; text-align: center; min-width: 120px; }
-        .arrow { margin: 0 10px; font-size: 20px; }
+        .flowchart { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+            padding: 15px; 
+            background: #1a1a1a; 
+            border-radius: 10px; 
+            border: 1px solid #444; 
+            align-items: center; 
+        }
+        .agent-box { 
+            padding: 10px; 
+            border-radius: 8px; 
+            text-align: center; 
+            font-size: 14px; 
+            position: relative; 
+            min-width: 150px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3); 
+        }
+        .agent-box.completed { 
+            border: 2px solid #00FF00; 
+        }
+        .agent-box.incomplete { 
+            border: 2px solid #FF0000; 
+        }
+        .arrow { 
+            margin: 0 5px; 
+            font-size: 16px; 
+            color: #888; 
+        }
+        .task-text { 
+            font-size: 12px; 
+            margin-top: 5px; 
+            word-wrap: break-word; 
+        }
     </style>
-    <div class='flowchart-container'>
+    <div class='flowchart'>
     """
-    for i, (from_agent, to_agent, summary) in enumerate(flowchart):
-        from_color = AGENT_COLORS.get(from_agent, "#FFFFFF")
-        to_color = AGENT_COLORS.get(to_agent, "#FFFFFF")
-        active = st.session_state.agent_status[from_agent]["active"]
-        from_style = f"background-color: {from_color}; color: black; opacity: {1.0 if active else 0.5};"
-        html += f"<div class='agent-box' style='{from_style}'>{from_agent}<br><small>{summary}</small></div>"
-        if i < len(flowchart) - 1 or to_agent != "Controller":
+    for i, (from_agent, to_agent, action, completed) in enumerate(flowchart):
+        color = AGENT_COLORS.get(from_agent, "#FFFFFF")
+        status_class = "completed" if completed else "incomplete"
+        html += f"""
+        <div class='agent-box {status_class}' style='background-color: {color}; color: black;'>
+            <strong>{from_agent}</strong>
+            <div class='task-text'>{action}</div>
+        </div>
+        """
+        if i < len(flowchart) - 1:
             html += "<span class='arrow'>→</span>"
     html += "</div>"
     return html
 
 def display_chat():
-    st.title("Disaster Response Mission")
-    
-    # Initialize session state and shared data
+    st.set_page_config(page_title="Disaster Response", layout="wide")
+    st.title("Disaster Response Dashboard")
+
     if "simulation_running" not in st.session_state:
         st.session_state.simulation_running = False
-    if "simulation_started" not in st.session_state:
-        st.session_state.simulation_started = False
-    if "chat_log" not in st.session_state:
         st.session_state.chat_log = []
-        st.session_state.agent_status = {agent: {"active": False, "message": ""} for agent in AGENT_COLORS.keys()}
+        st.session_state.agent_status = {agent: {"active": False, "message": "", "battery": 100, "task": "", "completed": False} for agent in AGENT_COLORS.keys()}
         st.session_state.flowchart = []
+        st.session_state.simulation_result = ""
+        st.session_state.disaster_type = "Unknown"
 
-    # Use session state variables
     chat_log = st.session_state.chat_log
     agent_status = st.session_state.agent_status
     flowchart = st.session_state.flowchart
 
-    # Start simulation button
-    if st.button("Start Simulation") and not st.session_state.simulation_started:
-        st.session_state.simulation_started = True
+    # Start button
+    if st.button("Start Mission", key="start") and not st.session_state.simulation_running:
         st.session_state.simulation_running = True
         thread = threading.Thread(target=run_simulation_in_background, args=(chat_log, agent_status, flowchart))
         thread.start()
 
-    # Layout with columns
-    col1, col2 = st.columns([1, 3])  # Left sidebar (1/4), Main flowchart (3/4)
+    # Three-column layout
+    col1, col2, col3 = st.columns([1, 2, 1])
 
-    # Left Sidebar: Active Agents
     with col1:
-        st.header("Active Agents")
-        if not agent_status:
-            st.write("No agents initialized yet.")
-        else:
-            active_found = False
-            for agent, status in agent_status.items():
-                if status["active"]:
-                    st.markdown(f"<span style='color:{AGENT_COLORS.get(agent, '#FFFFFF')}'>{agent}</span>", unsafe_allow_html=True)
-                    active_found = True
-            if not active_found:
-                st.write("No agents currently active.")
+        st.subheader("Agent Status")
+        for agent, status in agent_status.items():
+            color = AGENT_COLORS.get(agent, "#FFFFFF")
+            battery = status["battery"]
+            active = "Active" if status["active"] else "Inactive"
+            task = status["task"] if status["task"] else "No task"
+            completed = "✔" if status["completed"] else "✘"
+            st.markdown(f"<span style='color:{color}'>{agent}</span>: {active} | Battery: {battery}% | Task: {task} | Done: {completed}", unsafe_allow_html=True)
 
-    # Main Screen: Flowchart
     with col2:
-        st.header("Mission Flowchart")
-        st.markdown(draw_flowchart(flowchart), unsafe_allow_html=True)
-        st.write(f"Simulation Running: {st.session_state.simulation_running}")
+        #st.subheader("Mission Flow")
+        #st.markdown(f"<p style='color: #888; font-size: 16px;'>Disaster: {st.session_state.disaster_type}</p>", unsafe_allow_html=True)
+        st.subheader("Mission Flow")
+        st.markdown(f"<p style='color: #888; font-size: 16px;'>Disaster: {st.session_state.disaster_type}</p>", unsafe_allow_html=True)
+        # Use st.components.v1.html to render the flowchart
+        flowchart_html = draw_flowchart(flowchart)
+        components.html(flowchart_html, height=300, scrolling=True)
+        if st.session_state.simulation_result:
+            st.success(st.session_state.simulation_result)
 
-    # Right Toggle Chat
-    with st.expander("Chat Log", expanded=False):
-        if not chat_log:
-            st.write("No messages yet.")
-        else:
+    with col3:
+        with st.expander("Detailed Chat Log", expanded=False):
             for entry in chat_log:
                 sender = entry["sender"]
                 message = entry["message"]
                 color = AGENT_COLORS.get(sender, "#FFFFFF")
-                st.markdown(
-                    f"""
-                    <div style='background-color: {color}; padding: 10px; border-radius: 10px; margin: 5px; color: black;'>
-                        <b>{sender}:</b> {message}
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                st.markdown(f"<div style='background-color: {color}; padding: 8px; border-radius: 5px; margin: 5px; color: black;'><b>{sender}:</b> {message}</div>", unsafe_allow_html=True)
 
-    # Auto-refresh every 5 seconds while running
     if st.session_state.simulation_running:
         time.sleep(5)
         st.rerun()
