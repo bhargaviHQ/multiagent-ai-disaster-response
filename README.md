@@ -96,6 +96,12 @@ The Controller communicates with each agent sequentially in this order within ea
 - The order reflects a logical progression; planning (Controller), infrastructure (Routes-1), reconnaissance (Drone-1), assessment (Assess-1), and then action (Rescue-1, Supplies-1, Medical-1).
 
 Note: The Controller’s communication order is fixed, but task execution depends on the environment (e.g., Rescue-1 and Medical-1 only act if victims exist).
+
+![Controller Communication Sequence with Agent States and Backups]([URL or path to image](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Details.png))
+
+![Summary of Controller Communication Order](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Summary.png)
+
+
 ```
 Controller  
    ├──→ Routes-1       (Step 1: Clear routes)  
