@@ -1,7 +1,8 @@
+# Agentic AI in Multi-Agent Systems for Disaster Response
 ## Overview
 This project implements a Multi-Agent System (MAS) to simulate disaster response scenarios like earthquakes, floods, and wildfires. Built with Python and Streamlit, it features autonomous agents such as Controller, Rescue, and Drone. The system uses a Groq cloud with  `Deepseek R1 Distill Llama 70B` model for agent decision-making, dynamically assigning tasks such as victim rescue, supply delivery, damage assessment, and route clearing.
 
-The `DisasterEnvironment` class generates and updates a 100x100 grid with affected areas, blocked routes, and victim locations, while `simulation.py` manages the workflow, including random agent failures (10% chance) and battery depletion. The Streamlit UI visualizes agent statuses, a mission flowchart, and chat logs while logging results to a CSV knowledge base for future use.
+The `DisasterEnvironment` class generates and updates a 100x100 grid with affected areas, blocked routes, and victim locations, while `simulation.py` manages the workflow, including random agent failures (10% chance) and battery depletion. The Streamlit UI visualizes agent statuses, a mission flowchart, and chat logs while logging results to a CSV knowledge base for future analysis.
 
 ## Workflow  
 
@@ -96,6 +97,14 @@ The Controller communicates with each agent sequentially in this order within ea
 - The order reflects a logical progression; planning (Controller), infrastructure (Routes-1), reconnaissance (Drone-1), assessment (Assess-1), and then action (Rescue-1, Supplies-1, Medical-1).
 
 Note: The Controller’s communication order is fixed, but task execution depends on the environment (e.g., Rescue-1 and Medical-1 only act if victims exist).
+
+
+[View Detailed Controller Communication Sequence with Agent States and Backups](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Details.png)
+
+Summary of Controller Communication Order:
+![Summary of Controller Communication Order](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Summary.png)
+
+
 ```
 Controller  
    ├──→ Routes-1       (Step 1: Clear routes)  
@@ -164,6 +173,7 @@ Controller
 4. Enhance the UI with interactive controls like pause or step-through simulation.
 5. Integrate human-in-the-loop for dynamic decision-making.
 
+**Note:** In the current implementation, Medical-1 depends on prior steps (Routes-1, Drone-1/2, Assess-1, Rescue-1) to ensure victims are reachable and resources are used efficiently. Acting first risks wasting resources on inaccessible areas. The sequence ensures optimal resource allocation, validates victim presence, and avoids chaotic responses by stabilizing the situation before medical intervention. This approach can be changed according to the required priority.
 
 ## Repo Overview
 ```
