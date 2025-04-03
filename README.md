@@ -97,8 +97,11 @@ The Controller communicates with each agent sequentially in this order within ea
 
 Note: The Controller’s communication order is fixed, but task execution depends on the environment (e.g., Rescue-1 and Medical-1 only act if victims exist).
 
-![Controller Communication Sequence with Agent States and Backups]([URL or path to image](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Details.png))
+Controller Communication Sequence with Agent States and Backups:
+![Controller Communication Sequence with Agent States and Backups](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Details.png)
 
+
+Summary of Controller Communication Order:
 ![Summary of Controller Communication Order](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Summary.png)
 
 
