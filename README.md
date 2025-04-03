@@ -4,6 +4,7 @@ This project implements a Multi-Agent System (MAS) to simulate disaster response
 
 The `DisasterEnvironment` class generates and updates a 100x100 grid with affected areas, blocked routes, and victim locations, while `simulation.py` manages the workflow, including random agent failures (10% chance) and battery depletion. The Streamlit UI visualizes agent statuses, a mission flowchart, and chat logs while logging results to a CSV knowledge base for future analysis.
 
+![Disaster Response Monitor](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/screenshots/dashboard.png)
 ## Workflow  
 
 The system operates as a coordinated workflow involving multiple agents and components.  
