@@ -97,9 +97,8 @@ The Controller communicates with each agent sequentially in this order within ea
 
 Note: The Controller’s communication order is fixed, but task execution depends on the environment (e.g., Rescue-1 and Medical-1 only act if victims exist).
 
-Controller Communication Sequence with Agent States and Backups:
-![Controller Communication Sequence with Agent States and Backups](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Details.png)
 
+[View Detailed Controller Communication Sequence with Agent States and Backups](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Details.png)
 
 Summary of Controller Communication Order:
 ![Summary of Controller Communication Order](https://github.com/bhargaviHQ/multiagent-ai-disaster-response/blob/main/docs/img/Controller-Sequence-Summary.png)
@@ -173,6 +172,7 @@ Controller
 4. Enhance the UI with interactive controls like pause or step-through simulation.
 5. Integrate human-in-the-loop for dynamic decision-making.
 
+**Note:** In the current implementation, Medical-1 depends on prior steps (Routes-1, Drone-1/2, Assess-1, Rescue-1) to ensure victims are reachable and resources are used efficiently. Acting first risks wasting resources on inaccessible areas. The sequence ensures optimal resource allocation, validates victim presence, and avoids chaotic responses by stabilizing the situation before medical intervention. This approach can be changed according to the required priority.
 
 ## Repo Overview
 ```
