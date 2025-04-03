@@ -19,6 +19,8 @@ def run_disaster_simulation(steps=1, ui_mode=False, chat_log=None, agent_status=
     initial_message = f"Disaster Type: {env.disaster_type} | Affected Areas: {len(env.affected_areas)}"
     chat_log.append({"sender": "System", "message": initial_message})
 
+    #Below line controls the number of steps
+    #for step in range(steps):
     for step in range(1,2):
         chat_log.append({"sender": "System", "message": f"Controller starting..."})
         env.update_environment()
