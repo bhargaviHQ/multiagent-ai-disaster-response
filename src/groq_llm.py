@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
 # Load environment variables from .env file
-load_dotenv()
+#load_dotenv()
+load_dotenv(dotenv_path='config/.env')
 
 class GroqLLM:
     def __init__(self, model_name="deepseek-r1-distill-llama-70b"):
