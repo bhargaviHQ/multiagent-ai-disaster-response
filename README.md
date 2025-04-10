@@ -1,6 +1,6 @@
 # Agentic AI in Multi-Agent Systems for Disaster Response
 ## Overview
-This project implements a Multi-Agent System (MAS) to simulate disaster response scenarios like earthquakes, floods, and wildfires. Built with Python and Streamlit, it features autonomous agents such as Controller, Rescue, and Drone. The system uses a Groq cloud with  `Deepseek R1 Distill Llama 70B` model for agent decision-making, dynamically assigning tasks such as victim rescue, supply delivery, damage assessment, and route clearing.
+This project implements a Multi-Agent System (MAS) to simulate disaster response scenarios like earthquakes, floods, and wildfires. Built with Python and Streamlit, it features autonomous agents such as Controller, Rescue, and Drone. The system uses LangChain and Groq cloud with  `Deepseek R1 Distill Llama 70B` model for agent decision-making, dynamically assigning tasks such as victim rescue, supply delivery, damage assessment, and route clearing.
 
 The `DisasterEnvironment` class generates and updates a 100x100 grid with affected areas, blocked routes, and victim locations, while `simulation.py` manages the workflow, including random agent failures (10% chance) and battery depletion. The Streamlit UI visualizes agent statuses, a mission flowchart, and chat logs while logging results to a CSV knowledge base for future analysis.
 
